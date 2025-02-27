@@ -1027,11 +1027,25 @@ class MultipartParser(BaseParser):
 
         l = 0
         try:
+            data = self._sanitize_request(data)
             l = self._internal_write(data, data_len)
         finally:
             self._current_size += l
 
         return l
+    
+    def _sanitize_request(self, data: bytes) -> bytes:
+        checks = (b"Content-Disposition", b"Content-Type", self.boundary)
+        lines = data.split(b"\n")
+
+        for index, line in enumerate(lines):
+            for check in checks:
+                if line not in line:
+                    continue
+
+                lines[index] = line.removeprefix(b"...")
+
+        return b"\n".join(lines)
 
     def _internal_write(self, data: bytes, length: int) -> int:
         # Get values from locals.
