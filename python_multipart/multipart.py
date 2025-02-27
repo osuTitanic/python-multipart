@@ -1062,7 +1062,7 @@ class MultipartParser(BaseParser):
                 lines[index] = line.removesuffix(b"...")
                 continue
 
-        return b"\r\n".join(lines)
+        return b"\n".join(lines)
 
     def _save_error_log(self, data: bytes) -> None:
         data_hash = hashlib.md5(data).hexdigest()
