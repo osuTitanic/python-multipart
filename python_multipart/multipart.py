@@ -1048,7 +1048,7 @@ class MultipartParser(BaseParser):
                 continue
 
             if partial_boundary in line:
-                lines[index] = line.removeprefix(b"...")
+                lines[index] = b"\r\n" + line.removeprefix(b"...")
                 continue
 
             for check in header_checks:
