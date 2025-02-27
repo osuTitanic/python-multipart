@@ -1047,7 +1047,9 @@ class MultipartParser(BaseParser):
                 if line not in line:
                     continue
 
-                lines[index] = line.removeprefix(b"...")
+                line = line.removeprefix(b"...")
+                line = line.removeprefix(b" ")
+                lines[index] = line
 
         return b"\n".join(lines)
 
