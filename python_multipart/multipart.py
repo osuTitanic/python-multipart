@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+import hashlib
 import shutil
 import sys
 import tempfile
@@ -1029,6 +1030,9 @@ class MultipartParser(BaseParser):
         try:
             data = self._sanitize_request(data)
             l = self._internal_write(data, data_len)
+        except:
+            self._save_error_log(data)
+            raise
         finally:
             self._current_size += l
 
@@ -1046,6 +1050,12 @@ class MultipartParser(BaseParser):
                 lines[index] = line.removeprefix(b"...")
 
         return b"\n".join(lines)
+
+    def _save_error_log(self, data: bytes) -> None:
+        data_hash = hashlib.md5(data).hexdigest()
+
+        with open(f"multipart_errors_{data_hash}.log", "wb") as f:
+            f.write(data)
 
     def _internal_write(self, data: bytes, length: int) -> int:
         # Get values from locals.
