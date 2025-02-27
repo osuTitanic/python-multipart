@@ -1039,19 +1039,30 @@ class MultipartParser(BaseParser):
         return l
     
     def _sanitize_request(self, data: bytes) -> bytes:
-        checks = (b"Content-Disposition", b"Content-Type", self.boundary)
+        header_checks = (b"Content-Disposition", b"Content-Type")
+        partial_boundary = self.boundary[4:]
         lines = data.split(b"\n")
 
         for index, line in enumerate(lines):
-            for check in checks:
-                if line not in line:
+            if not (line.startswith(b"...") or line.endswith(b"...")):
+                continue
+
+            if partial_boundary in line:
+                lines[index] = line.removeprefix(b"...")
+                continue
+
+            for check in header_checks:
+                if check not in line:
                     continue
 
-                line = line.removeprefix(b"...")
-                line = line.removeprefix(b" ")
-                lines[index] = line
+                lines[index] = line.removeprefix(b"...")
+                break
 
-        return b"\n".join(lines)
+            else:
+                lines[index] = line.removesuffix(b"...")
+                continue
+
+        return b"\r\n".join(lines)
 
     def _save_error_log(self, data: bytes) -> None:
         data_hash = hashlib.md5(data).hexdigest()
