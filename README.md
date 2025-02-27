@@ -5,9 +5,4 @@
 
 ---
 
-`python-multipart` is an Apache2-licensed streaming multipart parser for Python.
-Test coverage is currently 100%.
-
-## Why?
-
-Because streaming uploads are awesome for large files.
+This is a fork of `python-multipart`, that accounts for some special invalid requests, that some users seem to have been getting when using multipart form requests.
