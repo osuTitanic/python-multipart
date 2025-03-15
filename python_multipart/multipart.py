@@ -1065,6 +1065,9 @@ class MultipartParser(BaseParser):
         return b"\n".join(lines)
 
     def _save_error_log(self, data: bytes) -> None:
+        if not os.environ.get("LOG_MULTIPART_ERRORS", None):
+            return
+
         data_hash = hashlib.md5(data).hexdigest()
 
         with open(f"multipart_errors_{data_hash}.log", "wb") as f:
